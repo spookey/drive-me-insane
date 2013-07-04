@@ -17,18 +17,25 @@ logger.setLevel(logging.INFO)
 logger.addHandler(filehandler)
 
 def getconf(key):
-    if path.exists(configfile):
-        with open(configfile, 'rb') as f:
-            try:
-                return json.loads(f.read().decode('utf-8'))[key]
-            except KeyError as e:
-                logger.info('requested key does not exist: %s' %(e))
-            except Exception as e:
-                logger.error('could not read from json: %s' %(e))
-    else:
-        logger.error('config file not found: %s' %(configfile))
-        print('config file not found: %s' %(configfile))
-        exit(0)
+    def _read_json():
+        if path.exists(configfile):
+            with open(configfile, 'rb') as f:
+                try:
+                    return json.loads(f.read().decode('utf-8'))
+                except Exception as e:
+                    logger.error('could not read from json: %s' %(e))
+        else:
+            logger.error('config file not found: %s' %(configfile))
+            print('config file not found: %s' %(configfile))
+            exit(0)
+
+    config = _read_json()
+
+    if config is not None:
+        try:
+            return config[key]
+        except KeyError as e:
+            logger.info('requested key does not exist: %s' %(e))
 
 def makeconf(inputdict):
     configfile = path.join(basedir, 'config.json')
@@ -38,14 +45,17 @@ def makeconf(inputdict):
         except Exception as e:
             logger.warning('could not write to json:', e)
 
-settings = {
+# Edit here
+test_message = 'Fire, exclamation mark, fire, exclamation mark, help me, exclamation mark. 123 Cavendon Road. Looking forward to hearing from you.\nYours truly, Maurice Moss.'
 
-    'test_message': 'Fire, exclamation mark, fire, exclamation mark, help me, exclamation mark. 123 Cavendon Road. Looking forward to hearing from you.\nYours truly, Maurice Moss.',
+settings = {
     'email_sender': 'Maurice Moss <mossfromIT@example.com>',
     'email_subject': 'Fire!',
     'email_footer': 'your ad here\nhttp://www.example.com/',
 
     'smtp_user': 'root',
+    'smtp_port': '587',
+    'smtp_use_ssl': True, # uses startSSL or plain as fallback, if false
     'smtp_server': 'localhost',
     'smtp_password': '',
 }

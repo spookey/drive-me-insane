@@ -13,7 +13,7 @@ from ssl import SSLError
 from smtplib import SMTP_SSL, SMTP, SMTPException
 from util import logger, getconf
 
-def make_header(to, sender, cc, subject=None):
+def make_header(to, sender, cc, subject=None, subjectdate=None):
     # prevent python to encode utf-8 text in base64. using quoted printables instead
     charset.add_charset('utf-8', charset.QP, charset.QP, 'utf-8')
     result = MIMEMultipart()
@@ -23,16 +23,16 @@ def make_header(to, sender, cc, subject=None):
     result.add_header('From', sender)
     if not subject: subject = getconf('email_subject')
     if not subject: subject = '☃'
-    subject = '[' + subject + '] ' + formatdate(localtime=True) if getconf('email_subject_date') else '[' + subject + ']'
+    subject = '[' + subject + '] ' + formatdate(localtime=True) if subjectdate else '[' + subject + ']'
     result.add_header('Subject', subject)
     result.add_header('Date', formatdate())
     result.add_header('X-Mailer', 'Postbote Willy')
 
     return result
 
-def make_mime_text(messagetext):
-    if getconf('email_footer'):
-        messagetext = '\n'.join([messagetext, '_' * 48, getconf('email_footer'), ''])
+def make_mime_text(messagetext, footer=None):
+    if footer:
+        messagetext = '\n'.join([messagetext, '_' * 48, footer, ''])
     return MIMEText(messagetext, 'plain', 'UTF-8')
 
 def make_mime_file(filename):
@@ -45,13 +45,14 @@ def make_mime_file(filename):
     filename = abspath(expanduser(filename))
     basefilename = basename(filename)
 
-    result = MIMEBase(*get_mime_type(filename))
-    result.set_payload(open(filename, 'rb').read())
-    result.add_header('Content-Disposition', 'attachment', filename=basefilename)
+    with open(filename, 'rb') as f:
+        result = MIMEBase(*get_mime_type(filename))
+        result.set_payload(f.read())
+        result.add_header('Content-Disposition', 'attachment', filename=basefilename)
 
-    encode_base64(result)
+        encode_base64(result)
 
-    return result
+        return result
 
 def ext_log(command, text, warn=False):
     logresult = command
@@ -60,68 +61,66 @@ def ext_log(command, text, warn=False):
     else: logger.info(line)
 
 def dialup():
-    try:
-        session = SMTP_SSL()
-        ext_log(session.connect(getconf('smtp_server')), 'SSL connection')
-    except (SMTPException, SSLError) as e:
-        logger.error('SMTP SSL error: %s' %(e))
-
-        try:
-            session = SMTP()
-            ext_log(session.connect(getconf('smtp_server'), 587), 'connection')
-            session.ehlo()
-            ext_log(session.starttls(), 'startTLS')
-            session.ehlo()
-        except SMTPException as e:
-            logger.error('SMTP startTLS error: %s' %(e))
-
-            try:
-                session = SMTP()
-                ext_log(session.connect(getconf('smtp_server')), 'plaintext connection', warn=True)
-            except SMTPException as e:
-                logger.error('SMTP error: %s' %(e))
-                logger.error('connection failed')
-                print('connection failed')
-                exit(0)
-            else:
-                return session
-
+    def _ssl():
+        sslsession = SMTP_SSL()
+        ext_log(sslsession.connect(getconf('smtp_server'), getconf('smtp_port')), 'SSL connection')
+        return sslsession
+    def  _starttls():
+        tlssession = SMTP()
+        ext_log(tlssession.connect(getconf('smtp_server'), getconf('smtp_port')), 'startTLS connection')
+        tlssession.ehlo()
+        if tlssession.has_extn('STARTTLS'):
+            ext_log(tlssession.starttls(), 'startTLS')
+            tlssession.ehlo
+            return tlssession
         else:
-            return session
+            logger.warn('plaintext connection')
+            return tlssession
 
-    else:
+    try:
+        if getconf('smtp_use_ssl'):
+            session = _ssl()
+        else:
+            session = _starttls()
+
+        ext_log(session.login(getconf('smtp_user'), getconf('smtp_password')), 'login')
         return session
 
+    except (SMTPException, SSLError, ConnectionRefusedError) as e:
+            logger.error('SMTP error: %s' %(e))
 
 def send_mail(to, messagetext, subject=None, **opt):
 
     cc = opt.get('cc', [])
     bcc = opt.get('bcc', [])
-    files = opt.get('files', [])
-    sender = opt.get('sender', getconf('email_sender'))
-
     recipients = list(chain(to, cc, bcc))
+    sender = opt.get('sender', getconf('email_sender'))
+    if not sender: sender = getconf('email_sender')
+    footer = opt.get('footer', getconf('email_footer'))
+    if not footer: footer = getconf('email_footer')
+
+    files = opt.get('files', [])
+    subjectdate = opt.get('subjectdate', getconf('email_subject_date'))
 
     logger.info('~' * 23)
-    logger.info('sending new mail using %s:\n%d recipients ~ %d cc, %d bcc | %d files' %(sender, len(recipients), len(cc), len(bcc), len(files)))
+    logger.info('sending new mail using %s:\n%d recipients ~ %d cc, %d bcc, %d files' %(sender, len(recipients), len(cc), len(bcc), len(files)))
 
-    message = make_header(to, sender, cc, subject)
-    message.attach(make_mime_text(messagetext))
+    message = make_header(to, sender, cc, subject, subjectdate)
+    message.attach(make_mime_text(messagetext, footer))
     [message.attach(make_mime_file(f)) for f in files]
 
     session = dialup()
 
-    try:
-        ext_log(session.login(getconf('smtp_user'), getconf('smtp_password')), 'login')
-        session.sendmail(sender, recipients, message.as_string().encode('utf-8'))
-        logger.info('mail sent')
-
-    except SMTPException as e:
-        logger.error('SMTP Error: %s' %(e))
-    finally:
-        ext_log(session.quit(), 'quit')
+    if session is not None:
+        try:
+            session.sendmail(sender, recipients, message.as_string().encode('utf-8'))
+        except SMTPException as e:
+            logger.error('SMTP Error: %s' %(e))
+            return e
+        else:
+            logger.info('mail sent')
+            return True
+        finally:
+            ext_log(session.quit(), 'quit')
 
     logger.info('end mail')
-
-if __name__ == '__main__':
-    pass
