@@ -24,6 +24,10 @@ def getconf(key):
             return config[key]
         except KeyError as e:
             logger.info('requested key does not exist: %s' %(e))
+    else:
+        logger.error('config file not found: %s' %(filename))
+        print('config file not found: %s' %(filename))
+        exit(0)
 
 def _read_json(filename):
     if path.exists(filename):
@@ -33,10 +37,7 @@ def _read_json(filename):
             except Exception as e:
                 logger.error('could not read from json: %s' %(e))
     else:
-        logger.error('config file not found: %s' %(filename))
-        print('config file not found: %s' %(filename))
-        exit(0)
-
+        logger.error('json file not found: %s' %(filename))
 
 def makeconf(inputdict):
     configfile = path.join(basedir, 'config.json')
