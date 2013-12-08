@@ -17,19 +17,7 @@ logger.setLevel(logging.INFO)
 logger.addHandler(filehandler)
 
 def getconf(key):
-    def _read_json():
-        if path.exists(configfile):
-            with open(configfile, 'rb') as f:
-                try:
-                    return json.loads(f.read().decode('utf-8'))
-                except Exception as e:
-                    logger.error('could not read from json: %s' %(e))
-        else:
-            logger.error('config file not found: %s' %(configfile))
-            print('config file not found: %s' %(configfile))
-            exit(0)
-
-    config = _read_json()
+    config = _read_json(configfile)
 
     if config is not None:
         try:
@@ -37,11 +25,27 @@ def getconf(key):
         except KeyError as e:
             logger.info('requested key does not exist: %s' %(e))
 
+def _read_json(filename):
+    if path.exists(filename):
+        with open(filename, 'rb') as f:
+            try:
+                return json.loads(f.read().decode('utf-8'))
+            except Exception as e:
+                logger.error('could not read from json: %s' %(e))
+    else:
+        logger.error('config file not found: %s' %(filename))
+        print('config file not found: %s' %(filename))
+        exit(0)
+
+
 def makeconf(inputdict):
     configfile = path.join(basedir, 'config.json')
+    _write_json(configfile, inputdict)
+
+def _write_json(filename, data):
     with open(configfile, 'w') as f:
         try:
-            f.write(json.dumps(inputdict, ensure_ascii=False, indent=4, sort_keys=True))
+            f.write(json.dumps(data, ensure_ascii=False, indent=4, sort_keys=True))
         except Exception as e:
             logger.warning('could not write to json:', e)
 

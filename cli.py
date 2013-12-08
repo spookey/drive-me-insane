@@ -13,10 +13,10 @@ def mail(params):
         else:
             parser.exit(status=-1, message='fail: %s' %(response))
 
-def aspsms():
+def aspsms(params):
     pass
 
-def gsmsms():
+def gsmsms(params):
     pass
 
 functions = {'mail': mail, 'aspsms': aspsms, 'gsmsms': gsmsms}

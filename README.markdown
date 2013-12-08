@@ -5,15 +5,15 @@ alerting, messaging ~ python
 
 use this software as a platform to enable messaging and alerting to your software or scripts
 
-not all libraries are python3 compatible, will fallback to 2.7 when necessary
+this code is python3
 
 ## configuration
 
 to build yourself a configuration change the sample values in `util.py` and execute it afterwards:
 
-    /usr/bin/python util.py
+    python util.py
 
-you should have a `config.json` afterwards.
+you should have a __config.json__ afterwards.
 
 ## cli
 
@@ -21,23 +21,28 @@ this is a command line interface for your scripts
 
 syntax: see `python cli.py -h`
 
+Simple mail example:
+	
+	python cli.py mail mail@example.com 'This is a test-message' --subject 'Test'
+
 ### mail
 
-this uses a `smtp` connection to a server configured.
+this uses a __smtp__ connection to a server configured.
 
 syntax: see contents of `sample.py`
 
-### aspsms
+### aspsms (planned)
 
-this uses the [http://aspsms.ch/](http://aspsms.ch/ "aspsms") `soap` webservice.
+this uses the **[http://aspsms.ch/](http://aspsms.ch/ "aspsms") webservice**.
 
-this depends on `pysimplesoap`, install via:
-
-    pip install --upgrade pysimplesoap
+syntax: see contents of `sample.py`
 
 #### todo
 
 * More Channels
+
+    * irc
+    * gsmsms
 
 * Documentation
 
