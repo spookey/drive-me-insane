@@ -43,7 +43,7 @@ def makeconf(inputdict):
     _write_json(configfile, inputdict)
 
 def _write_json(filename, data):
-    with open(configfile, 'w') as f:
+    with open(filename, 'w') as f:
         try:
             f.write(json.dumps(data, ensure_ascii=False, indent=4, sort_keys=True))
         except Exception as e:
