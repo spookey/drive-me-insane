@@ -6,7 +6,7 @@ from util import logger
 
 def mail(params):
     logger.info('cli sends mail')
-    response = send_mail(params.to, params.message, subject=params.subject, subjectdate=params.subjectd, cc=params.cc, bcc=params.bcc, files=params.files, sender=params.sender, footer=params.footer)
+    response = send_mail(params.to, params.message, subject=params.subject, subjecttopic=params.subjecttopic, subjectdate=params.subjectd, cc=params.cc, bcc=params.bcc, files=params.files, sender=params.sender, footer=params.footer)
     if response:
         if response == True:
             parser.exit(status=0, message='success, mail sent')
@@ -32,6 +32,7 @@ def main():
     parser.add_argument('message', action='store', help='"message text" (use quotes, please)')
 
     mailgroup.add_argument('--subject', action='store', help='message subject (use quotes, if you have whitespace in it)')
+    mailgroup.add_argument('--subjecttopic', action='store', help='prefix the subject with a topic in square brackets')
     mailgroup.add_argument('--subjectd', action='store_true', help='append date to message subject')
     mailgroup.add_argument('--cc', action='store', nargs='*', default='', help='cc this message')
     mailgroup.add_argument('--bcc', action='store', nargs='*', default='', help='bcc this message')

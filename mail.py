@@ -13,7 +13,7 @@ from ssl import SSLError
 from smtplib import SMTP_SSL, SMTP, SMTPException
 from util import logger, getconf
 
-def make_header(to, sender, cc, subject=None, subjectdate=None):
+def make_header(to, sender, cc, subject=None, subjecttopic=None, subjectdate=None):
     # prevent python to encode utf-8 text in base64. using quoted printables instead
     charset.add_charset('utf-8', charset.QP, charset.QP, 'utf-8')
     result = MIMEMultipart()
@@ -23,7 +23,8 @@ def make_header(to, sender, cc, subject=None, subjectdate=None):
     result.add_header('From', sender)
     if not subject: subject = getconf('email_subject')
     if not subject: subject = '☃'
-    subject = '[' + subject + '] ' + formatdate(localtime=True) if subjectdate else '[' + subject + ']'
+    subject = '[' + subjecttopic + '] ' + subject if subjecttopic else subject
+    subject = subject + ' ' + formatdate(localtime=True) if subjectdate else subject
     result.add_header('Subject', subject)
     result.add_header('Date', formatdate())
     result.add_header('X-Mailer', 'Postbote Willy')
@@ -98,6 +99,7 @@ def send_mail(to, messagetext, subject=None, **opt):
     if not sender: sender = getconf('email_sender')
     footer = opt.get('footer', getconf('email_footer'))
     if not footer: footer = getconf('email_footer')
+    subjecttopic = opt.get('subjecttopic', getconf('email_defaulttopic'))
 
     files = opt.get('files', [])
     subjectdate = opt.get('subjectdate', getconf('email_subject_date'))
@@ -105,7 +107,7 @@ def send_mail(to, messagetext, subject=None, **opt):
     logger.info('~' * 23)
     logger.info('sending new mail using %s:\n%d recipients ~ %d cc, %d bcc, %d files' %(sender, len(recipients), len(cc), len(bcc), len(files)))
 
-    message = make_header(to, sender, cc, subject, subjectdate)
+    message = make_header(to, sender, cc, subject, subjecttopic, subjectdate)
     message.attach(make_mime_text(messagetext, footer))
     [message.attach(make_mime_file(f)) for f in files]
 

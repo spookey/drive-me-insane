@@ -13,6 +13,7 @@ if __name__ == '__main__':
         ['one@example.com', 'two@example.com'],
         'Hello you two, I\'ve added some other recipients and the readme',
         subject='mail to many recipients',
+        subjecttopic='Information'
         subjectdate=True,
         cc=['three@example.com', 'four@example.com'],
         bcc=['five@example.com'],

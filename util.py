@@ -57,6 +57,7 @@ settings = {
     'email_sender': 'Maurice Moss <mossfromIT@example.com>',
     'email_subject': 'Fire!',
     'email_footer': 'your ad here\nhttp://www.example.com/',
+    'email_defaulttopic': 'Warning',
 
     'smtp_user': 'root',
     'smtp_port': '587',
