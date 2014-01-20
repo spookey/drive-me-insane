@@ -25,8 +25,8 @@ def getconf(key):
         except KeyError as e:
             logger.info('requested key does not exist: %s' %(e))
     else:
-        logger.error('config file not found: %s' %(filename))
-        print('config file not found: %s' %(filename))
+        logger.error('config file not found: %s' %(configfile))
+        print('config file not found: %s' %(configfile))
         exit(0)
 
 def _read_json(filename):
