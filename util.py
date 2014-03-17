@@ -48,7 +48,7 @@ def _write_json(filename, data):
         try:
             f.write(json.dumps(data, ensure_ascii=False, indent=4, sort_keys=True))
         except Exception as e:
-            logger.warning('could not write to json:', e)
+            logger.warning('could not write to json: %s' %(e))
 
 # Edit here
 test_message = 'Fire, exclamation mark, fire, exclamation mark, help me, exclamation mark. 123 Cavendon Road. Looking forward to hearing from you.\nYours truly, Maurice Moss.'
