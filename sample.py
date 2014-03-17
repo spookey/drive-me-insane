@@ -1,7 +1,7 @@
 # -.- coding: utf-8 -.-
 
-from util import logger, getconf, test_message
-from mail import send_mail
+from .util import logger, test_message
+from .mail import send_mail
 
 if __name__ == '__main__':
 
@@ -13,7 +13,7 @@ if __name__ == '__main__':
         ['one@example.com', 'two@example.com'],
         'Hello you two, I\'ve added some other recipients and the readme',
         subject='mail to many recipients',
-        subjecttopic='Information'
+        subjecttopic='Information',
         subjectdate=True,
         cc=['three@example.com', 'four@example.com'],
         bcc=['five@example.com'],
