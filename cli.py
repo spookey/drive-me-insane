@@ -1,8 +1,8 @@
 # -.- coding: utf-8 -.-
 
 from argparse import ArgumentParser
-from .mail import send_mail
-from .util import logger
+from mail import send_mail
+from util import logger
 
 def mail(params):
     logger.info('cli sends mail')

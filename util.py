@@ -56,6 +56,7 @@ test_message = 'Fire, exclamation mark, fire, exclamation mark, help me, exclama
 settings = {
     'email_sender': 'Maurice Moss <mossfromIT@example.com>',
     'email_subject': 'Fire!',
+    'email_subjectdate': False, #Include Date in Subject
     'email_footer': 'your ad here\nhttp://www.example.com/',
     'email_defaulttopic': 'Warning',
 

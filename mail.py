@@ -9,9 +9,9 @@ from email.mime.text import MIMEText
 from email.utils import formatdate
 from mimetypes import guess_type
 from os.path import abspath, basename, expanduser
-from ssl import SSLError
+from ssl import SSLError, SSLContext, PROTOCOL_SSLv3
 from smtplib import SMTP_SSL, SMTP, SMTPException
-from .util import logger, getconf
+from util import logger, getconf
 
 def make_header(to, sender, cc, subject=None, subjecttopic=None, subjectdate=None):
     # prevent python to encode utf-8 text in base64. using quoted printables instead
@@ -62,8 +62,9 @@ def ext_log(command, text, warn=False):
     else: logger.info(line)
 
 def dialup():
+    context = SSLContext(PROTOCOL_SSLv3)
     def _ssl():
-        sslsession = SMTP_SSL()
+        sslsession = SMTP_SSL(context=context)
         ext_log(sslsession.connect(getconf('smtp_server'), getconf('smtp_port')), 'SSL connection')
         return sslsession
     def  _starttls():
@@ -71,8 +72,8 @@ def dialup():
         ext_log(tlssession.connect(getconf('smtp_server'), getconf('smtp_port')), 'startTLS connection')
         tlssession.ehlo()
         if tlssession.has_extn('STARTTLS'):
-            ext_log(tlssession.starttls(), 'startTLS')
-            tlssession.ehlo
+            ext_log(tlssession.starttls(context=context), 'startTLS')
+            tlssession.ehlo()
             return tlssession
         else:
             logger.warn('plaintext connection')
@@ -87,7 +88,7 @@ def dialup():
         ext_log(session.login(getconf('smtp_user'), getconf('smtp_password')), 'login')
         return session
 
-    except (SMTPException, SSLError, ConnectionRefusedError) as e:
+    except (SMTPException, SSLError) as e:
             logger.error('SMTP error: %s' %(e))
 
 def send_mail(to, messagetext, subject=None, **opt):

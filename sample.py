@@ -1,7 +1,7 @@
 # -.- coding: utf-8 -.-
 
-from .util import logger, test_message
-from .mail import send_mail
+from util import logger, test_message
+from mail import send_mail
 
 if __name__ == '__main__':
 
