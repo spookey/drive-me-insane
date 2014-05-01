@@ -13,9 +13,9 @@ from ssl import SSLError, SSLContext, PROTOCOL_SSLv3
 from smtplib import SMTP_SSL, SMTP, SMTPException
 from util import logger, getconf
 
-def make_header(to, sender, cc, subject=None, subjecttopic=None, subjectdate=None):
+def make_header(to, sender, cc, subject=None, subjecttag=None, subjectdate=None):
     # prevent python to encode utf-8 text in base64. using quoted printables instead
-    charset.add_charset('utf-8', charset.QP, charset.QP, 'utf-8')
+    charset.add_charset('utf-8', charset.QP, charset.QP, 'UTF-8')
     result = MIMEMultipart()
     # result.preamble = 'whatever'
     result.add_header('To', ', '.join(to))
@@ -23,7 +23,7 @@ def make_header(to, sender, cc, subject=None, subjecttopic=None, subjectdate=Non
     result.add_header('From', sender)
     if not subject: subject = getconf('email_subject')
     if not subject: subject = '☃'
-    subject = '[' + subjecttopic + '] ' + subject if subjecttopic else subject
+    subject = '[' + subjecttag + '] ' + subject if subjecttag else subject
     subject = subject + ' ' + formatdate(localtime=True) if subjectdate else subject
     result.add_header('Subject', subject)
     result.add_header('Date', formatdate())
@@ -57,7 +57,7 @@ def make_mime_file(filename):
 
 def ext_log(command, text, warn=False):
     logresult = command
-    line = '%s: status: %d ~ %s' %(text, logresult[0], logresult[-1].decode('utf-8'))
+    line = '%s: status: %d ~ %s' %(text, logresult[0], logresult[-1].decode('UTF-8'))
     if warn: logger.warn(line)
     else: logger.info(line)
 
@@ -88,8 +88,8 @@ def dialup():
         ext_log(session.login(getconf('smtp_user'), getconf('smtp_password')), 'login')
         return session
 
-    except (SMTPException, SSLError) as e:
-            logger.error('SMTP error: %s' %(e))
+    except (SMTPException, SSLError) as ex:
+            logger.error('SMTP error: %s' %(ex))
 
 def send_mail(to, messagetext, subject=None, **opt):
 
@@ -100,15 +100,14 @@ def send_mail(to, messagetext, subject=None, **opt):
     if not sender: sender = getconf('email_sender')
     footer = opt.get('footer', getconf('email_footer'))
     if not footer: footer = getconf('email_footer')
-    subjecttopic = opt.get('subjecttopic', getconf('email_defaulttopic'))
-
-    files = opt.get('files', [])
+    subjecttag = opt.get('subjecttag', getconf('email_defaulttag'))
     subjectdate = opt.get('subjectdate', getconf('email_subject_date'))
+    files = opt.get('files', [])
 
     logger.info('~' * 23)
     logger.info('sending new mail using %s:\n%d recipients ~ %d cc, %d bcc, %d files' %(sender, len(recipients), len(cc), len(bcc), len(files)))
 
-    message = make_header(to, sender, cc, subject, subjecttopic, subjectdate)
+    message = make_header(to, sender, cc, subject, subjecttag, subjectdate)
     message.attach(make_mime_text(messagetext, footer))
     [message.attach(make_mime_file(f)) for f in files]
 
@@ -116,10 +115,10 @@ def send_mail(to, messagetext, subject=None, **opt):
 
     if session is not None:
         try:
-            session.sendmail(sender, recipients, message.as_string().encode('utf-8'))
-        except SMTPException as e:
-            logger.error('SMTP Error: %s' %(e))
-            return e
+            session.sendmail(sender, recipients, message.as_string().encode('UTF-8'))
+        except SMTPException as ex:
+            logger.error('smtp error: %s' %(ex))
+            return ex
         else:
             logger.info('mail sent')
             return True

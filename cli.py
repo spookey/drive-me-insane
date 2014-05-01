@@ -1,20 +1,27 @@
 # -.- coding: utf-8 -.-
 
 from argparse import ArgumentParser
+from aspsms import send_aspsms
 from mail import send_mail
-from util import logger
+from util import logger, sample_settings
 
 def mail(params):
     logger.info('cli sends mail')
-    response = send_mail(params.to, params.message, subject=params.subject, subjecttopic=params.subjecttopic, subjectdate=params.subjectd, cc=params.cc, bcc=params.bcc, files=params.files, sender=params.sender, footer=params.footer)
+    response = send_mail(params.to, params.message, subject=params.subject, subjecttag=params.subjecttag, subjectdate=params.subjectd, cc=params.cc, bcc=params.bcc, files=params.files, sender=params.sender, footer=params.footer)
     if response:
         if response == True:
-            parser.exit(status=0, message='success, mail sent')
+            parser.exit(status=0, message='success, mail sent\n')
         else:
-            parser.exit(status=-1, message='fail: %s' %(response))
+            parser.exit(status=-1, message='fail: %s\n' %(response))
 
 def aspsms(params):
-    pass
+    logger.info('cli sends aspsms')
+    response = send_aspsms(params.to, params.message, originator=params.origin, flashing=params.flashing, maxchars=params.maxchars)
+    if response:
+        if response == True:
+            parser.exit(status=0, message='success, aspsms sent\n')
+        else:
+            parser.exit(status=-1, message='fail: %s\n' %(response))
 
 def gsmsms(params):
     pass
@@ -32,15 +39,17 @@ def main():
     parser.add_argument('message', action='store', help='"message text" (use quotes, please)')
 
     mailgroup.add_argument('--subject', action='store', help='message subject (use quotes, if you have whitespace in it)')
-    mailgroup.add_argument('--subjecttopic', action='store', help='prefix the subject with a topic in square brackets')
-    mailgroup.add_argument('--subjectd', action='store_true', help='append date to message subject')
+    mailgroup.add_argument('--subjecttag', action='store', help='prefix the subject with a tag in square brackets')
+    mailgroup.add_argument('--subjectd', action='store_true', help='append current date to message subject')
     mailgroup.add_argument('--cc', action='store', nargs='*', default='', help='cc this message')
     mailgroup.add_argument('--bcc', action='store', nargs='*', default='', help='bcc this message')
     mailgroup.add_argument('--files', action='store', nargs='*', default='', help='append files')
     mailgroup.add_argument('--sender', action='store', help='alter the sender e.g.: --sender "Briefträger Willy <willy@example.com>"')
     mailgroup.add_argument('--footer', action='store', help='alter the footer (use quotes, and \\n for newlines)')
 
-    aspsmsgroup.add_argument('--origin', action='store', help='alter the originator e.g.: \'Willy\' or \'+123456\'')
+    aspsmsgroup.add_argument('--origin', action='store', help='alter the originator e.g.: \'Willy\' or \'+123456789\'')
+    aspsmsgroup.add_argument('--flashing', action='store_true', default=False, help='send flashing sms')
+    aspsmsgroup.add_argument('--maxchars', action='store', default=sample_settings['aspsms_maxchars'], type=int, help='split into several messages after N characters (default: %d)' %(sample_settings['aspsms_maxchars']))
 
     gsmsmsgroup.add_argument('--baud', action='store', default=115500, type=int, help='set the BAUD rate')
 

@@ -1,7 +1,6 @@
-# drive-me-insane
+# notify
 
-
-alerting, messaging ~ python
+mail and sms alert in python
 
 use this software as a platform to enable messaging and alerting to your software or scripts
 
@@ -11,7 +10,7 @@ this code is python3
 
 to build yourself a configuration change the sample values in `util.py` and execute it afterwards:
 
-    python util.py
+    python3 util.py
 
 you should have a __config.json__ afterwards.
 
@@ -23,7 +22,20 @@ syntax: see `python cli.py -h`
 
 Simple mail example:
 	
-	python cli.py mail mail@example.com 'This is a test-message' --subject 'Test'
+	python3 cli.py mail mail@example.com 'This is a test message' --subject 'Test'
+
+Mail to multiple recipients:
+
+    python3 cli.py mail one@example.com two@example.com \
+    'There is an attached file' \
+    --cc three@example.com \
+    --subject 'Test' \
+    --sender 'Command Line <user@host.org>' \
+    --files README.markdown
+
+Simple aspsms example:
+
+    python3 cli.py aspsms 049123456789 'This is a test message' 
 
 ### mail
 
@@ -31,9 +43,11 @@ this uses a __smtp__ connection to a server configured.
 
 syntax: see contents of `sample.py`
 
-### aspsms (planned)
+### aspsms
 
-this uses the **[http://aspsms.ch/](http://aspsms.ch/ "aspsms") webservice**.
+this uses the [http://aspsms.ch/](http://aspsms.ch/ "aspsms") __webservice__.
+
+requires [python-requests](http://python-requests.org/ "python-requests") module.
 
 syntax: see contents of `sample.py`
 

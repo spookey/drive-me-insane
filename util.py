@@ -34,8 +34,8 @@ def _read_json(filename):
         with open(filename, 'rb') as f:
             try:
                 return json.loads(f.read().decode('utf-8'))
-            except Exception as e:
-                logger.error('could not read from json: %s' %(e))
+            except Exception as ex:
+                logger.error('could not read from json: %s' %(ex))
     else:
         logger.error('json file not found: %s' %(filename))
 
@@ -47,18 +47,25 @@ def _write_json(filename, data):
     with open(filename, 'w') as f:
         try:
             f.write(json.dumps(data, ensure_ascii=False, indent=4, sort_keys=True))
-        except Exception as e:
-            logger.warning('could not write to json: %s' %(e))
+        except Exception as ex:
+            logger.warning('could not write to json: %s' %(ex))
 
 # Edit here
 test_message = 'Fire, exclamation mark, fire, exclamation mark, help me, exclamation mark. 123 Cavendon Road. Looking forward to hearing from you.\nYours truly, Maurice Moss.'
 
-settings = {
+sample_settings = {
+    'aspsms_flashing': False,
+    'aspsms_password': '',
+    'aspsms_originator': 'MMoss',
+    'aspsms_gateway': 'http://xml1.aspsms.com:5061/xmlsvr.asp',
+    'aspsms_maxchars': 160,
+    'aspsms_userkey': '',
+
     'email_sender': 'Maurice Moss <mossfromIT@example.com>',
     'email_subject': 'Fire!',
     'email_subjectdate': False, #Include Date in Subject
     'email_footer': 'your ad here\nhttp://www.example.com/',
-    'email_defaulttopic': 'Warning',
+    'email_defaulttag': 'OT',
 
     'smtp_user': 'root',
     'smtp_port': '587',
@@ -68,4 +75,4 @@ settings = {
 }
 
 if __name__ == '__main__':
-    makeconf(settings)
+    makeconf(sample_settings)
