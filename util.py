@@ -54,12 +54,12 @@ def _write_json(filename, data):
 test_message = 'Fire, exclamation mark, fire, exclamation mark, help me, exclamation mark. 123 Cavendon Road. Looking forward to hearing from you.\nYours truly, Maurice Moss.'
 
 sample_settings = {
-    'aspsms_flashing': False,
-    'aspsms_password': '',
-    'aspsms_originator': 'MMoss',
-    'aspsms_gateway': 'http://xml1.aspsms.com:5061/xmlsvr.asp',
-    'aspsms_maxchars': 160,
     'aspsms_userkey': '',
+    'aspsms_password': '',
+    'aspsms_gateway': 'http://xml1.aspsms.com:5061/xmlsvr.asp',
+    'aspsms_originator': 'MMoss',
+    'aspsms_flashing': False,
+    'aspsms_maxchars': 160,
 
     'email_sender': 'Maurice Moss <mossfromIT@example.com>',
     'email_subject': 'Fire!',
@@ -68,10 +68,16 @@ sample_settings = {
     'email_defaulttag': 'OT',
 
     'smtp_user': 'root',
+    'smtp_password': '',
+    'smtp_server': 'localhost',
     'smtp_port': '587',
     'smtp_use_ssl': True, # uses startSSL or plain as fallback, if false
-    'smtp_server': 'localhost',
-    'smtp_password': '',
+
+    'twitter_api_key': '',
+    'twitter_api_secret': '',
+    'twitter_oauth_token': '',
+    'twitter_oauth_token_secret': '',
+
 }
 
 if __name__ == '__main__':

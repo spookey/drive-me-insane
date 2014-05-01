@@ -42,12 +42,12 @@ def response_xml(xml):
             logger.info('aspsms %s: %s' %(key, val))
     return result
 
-def send_aspsms(to, messagetext, **opt):
+def send_aspsms(to, messagetext, **args):
 
-    originator=opt.get('originator', getconf('aspsms_originator'))
-    if not originator: originator=getconf('aspsms_originator')
-    flashing=opt.get('flashing', getconf('aspsms_flashing'))
-    maxchars=opt.get('maxchars', getconf('aspsms_maxchars'))
+    originator = args.get('originator', getconf('aspsms_originator'))
+    if not originator: originator = getconf('aspsms_originator')
+    flashing = args.get('flashing', getconf('aspsms_flashing'))
+    maxchars = args.get('maxchars', getconf('aspsms_maxchars'))
 
     logger.info('~' * 23)
     logger.info('sending new aspsms using %s:\n%d recipients ~ flashing: %s' %(originator, len(to), flashing))

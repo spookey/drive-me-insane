@@ -14,6 +14,8 @@ to build yourself a configuration change the sample values in `util.py` and exec
 
 you should have a __config.json__ afterwards.
 
+twitter: get an api key and run `python3 twitter.py` to generate oauth credentials.
+
 ## cli
 
 this is a command line interface for your scripts
@@ -35,7 +37,11 @@ Mail to multiple recipients:
 
 Simple aspsms example:
 
-    python3 cli.py aspsms 049123456789 'This is a test message' 
+    python3 cli.py aspsms 0491234567890 'This is a test message' 
+
+Simple twitter example:
+
+    python3 cli.py twitter 'This is a test message' 
 
 ### mail
 
@@ -48,6 +54,14 @@ syntax: see contents of `sample.py`
 this uses the [http://aspsms.ch/](http://aspsms.ch/ "aspsms") __webservice__.
 
 requires [python-requests](http://python-requests.org/ "python-requests") module.
+
+syntax: see contents of `sample.py`
+
+### twitter
+
+posts http messages to twitter using oauth.
+
+requires [requests-oauthlib](https://requests-oauthlib.readthedocs.org/en/latest/ "python-requests-oauthlib") module.
 
 syntax: see contents of `sample.py`
 

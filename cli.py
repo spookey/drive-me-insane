@@ -2,31 +2,38 @@
 
 from argparse import ArgumentParser
 from aspsms import send_aspsms
+from twitter import send_tweet
 from mail import send_mail
 from util import logger, sample_settings
 
 def mail(params):
     logger.info('cli sends mail')
     response = send_mail(params.to, params.message, subject=params.subject, subjecttag=params.subjecttag, subjectdate=params.subjectd, cc=params.cc, bcc=params.bcc, files=params.files, sender=params.sender, footer=params.footer)
-    if response:
-        if response == True:
-            parser.exit(status=0, message='success, mail sent\n')
-        else:
-            parser.exit(status=-1, message='fail: %s\n' %(response))
+    if response == True:
+        parser.exit(status=0, message='success, mail sent\n')
+    else:
+        parser.exit(status=-1, message='fail: %s\n' %(response))
 
 def aspsms(params):
     logger.info('cli sends aspsms')
     response = send_aspsms(params.to, params.message, originator=params.origin, flashing=params.flashing, maxchars=params.maxchars)
-    if response:
-        if response == True:
-            parser.exit(status=0, message='success, aspsms sent\n')
-        else:
-            parser.exit(status=-1, message='fail: %s\n' %(response))
+    if response == True:
+        parser.exit(status=0, message='success, aspsms sent\n')
+    else:
+        parser.exit(status=-1, message='fail: %s\n' %(response))
 
 def gsmsms(params):
     pass
 
-functions = {'mail': mail, 'aspsms': aspsms, 'gsmsms': gsmsms}
+def twitter(params):
+    logger.info('cli sends tweet')
+    response = send_tweet(params.message, mention=params.mention)
+    if response == True:
+        parser.exit(status=0, message='success, tweet sent\n')
+    else:
+        parser.exit(status=-1, message='fail: %s\n' %(response))
+
+functions = {'mail': mail, 'aspsms': aspsms, 'gsmsms': gsmsms, 'twitter': twitter}
 parser = ArgumentParser(prog='drive-me-insane', description='drive-me-insane command line interface', epilog='Willy cares', add_help=True)
 
 def main():
@@ -34,6 +41,7 @@ def main():
     mailgroup = parser.add_argument_group('mail', description='mail exclusive features')
     aspsmsgroup = parser.add_argument_group('aspsms', description='aspsms exclusive features')
     gsmsmsgroup = parser.add_argument_group('gsmsms', description='gsmsms exclusive features')
+    twittergroup = parser.add_argument_group('twitter', description='twitter exclusive features')
 
     parser.add_argument('to', action='store', nargs='*', help='destination address(es) according to message type e.g.: one@example.com or space separated for multiple e.g.: one@example.com two@example.com. This behaves similar for sms e.g.: +1234567 or for multiple e.g.: +1234567 +7654321')
     parser.add_argument('message', action='store', help='"message text" (use quotes, please)')
@@ -52,6 +60,8 @@ def main():
     aspsmsgroup.add_argument('--maxchars', action='store', default=sample_settings['aspsms_maxchars'], type=int, help='split into several messages after N characters (default: %d)' %(sample_settings['aspsms_maxchars']))
 
     gsmsmsgroup.add_argument('--baud', action='store', default=115500, type=int, help='set the BAUD rate')
+
+    twittergroup.add_argument('--mention', action='store', nargs='*', help='mention @user')
 
     args = parser.parse_args()
 

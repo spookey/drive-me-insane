@@ -91,18 +91,18 @@ def dialup():
     except (SMTPException, SSLError) as ex:
             logger.error('SMTP error: %s' %(ex))
 
-def send_mail(to, messagetext, subject=None, **opt):
+def send_mail(to, messagetext, subject=None, **args):
 
-    cc = opt.get('cc', [])
-    bcc = opt.get('bcc', [])
+    cc = args.get('cc', [])
+    bcc = args.get('bcc', [])
     recipients = list(chain(to, cc, bcc))
-    sender = opt.get('sender', getconf('email_sender'))
+    sender = args.get('sender', getconf('email_sender'))
     if not sender: sender = getconf('email_sender')
-    footer = opt.get('footer', getconf('email_footer'))
+    footer = args.get('footer', getconf('email_footer'))
     if not footer: footer = getconf('email_footer')
-    subjecttag = opt.get('subjecttag', getconf('email_defaulttag'))
-    subjectdate = opt.get('subjectdate', getconf('email_subject_date'))
-    files = opt.get('files', [])
+    subjecttag = args.get('subjecttag', getconf('email_defaulttag'))
+    subjectdate = args.get('subjectdate', getconf('email_subject_date'))
+    files = args.get('files', [])
 
     logger.info('~' * 23)
     logger.info('sending new mail using %s:\n%d recipients ~ %d cc, %d bcc, %d files' %(sender, len(recipients), len(cc), len(bcc), len(files)))
