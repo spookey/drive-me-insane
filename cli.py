@@ -4,7 +4,11 @@ from argparse import ArgumentParser
 from aspsms import send_aspsms
 from twitter import send_tweet
 from mail import send_mail
-from util import logger, sample_settings
+try:
+    from util import logger, sample_settings
+except ImportError:
+    from .util import logger, sample_settings
+
 
 def mail(params):
     logger.info('cli sends mail')

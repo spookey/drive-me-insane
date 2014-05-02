@@ -1,8 +1,11 @@
 # -.- coding: utf-8 -.-
 
 from requests import post as rpost
-from util import logger, getconf
 from textwrap import wrap
+try:
+    from util import logger, getconf
+except ImportError:
+    from .util import logger, getconf
 
 xml_base = '''<?xml version="1.0"?>
 <aspsms>

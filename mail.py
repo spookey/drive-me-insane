@@ -11,7 +11,10 @@ from mimetypes import guess_type
 from os.path import abspath, basename, expanduser
 from ssl import SSLError, SSLContext, PROTOCOL_SSLv3
 from smtplib import SMTP_SSL, SMTP, SMTPException
-from util import logger, getconf
+try:
+    from util import logger, getconf
+except ImportError:
+    from .util import logger, getconf
 
 def make_header(to, sender, cc, subject=None, subjecttag=None, subjectdate=None):
     # prevent python to encode utf-8 text in base64. using quoted printables instead

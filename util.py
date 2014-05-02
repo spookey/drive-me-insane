@@ -1,9 +1,9 @@
 # -.- coding: utf-8 -.-
 
-import json
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from os import path
+from json import loads, dumps
 
 basedir = path.abspath(path.dirname(__file__))
 configfile = path.join(basedir, 'config.json')
@@ -33,7 +33,7 @@ def _read_json(filename):
     if path.exists(filename):
         with open(filename, 'rb') as f:
             try:
-                return json.loads(f.read().decode('utf-8'))
+                return loads(f.read().decode('utf-8'))
             except Exception as ex:
                 logger.error('could not read from json: %s' %(ex))
     else:
@@ -46,7 +46,7 @@ def makeconf(inputdict):
 def _write_json(filename, data):
     with open(filename, 'w') as f:
         try:
-            f.write(json.dumps(data, ensure_ascii=False, indent=4, sort_keys=True))
+            f.write(dumps(data, ensure_ascii=False, indent=4, sort_keys=True))
         except Exception as ex:
             logger.warning('could not write to json: %s' %(ex))
 

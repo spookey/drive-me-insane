@@ -2,8 +2,10 @@
 
 from requests_oauthlib import OAuth1Session
 from textwrap import wrap
-import urllib
-from util import logger, getconf
+try:
+    from util import logger, getconf
+except ImportError:
+    from .util import logger, getconf
 
 request_token_url = 'https://api.twitter.com/oauth/request_token'
 authorization_url = 'https://api.twitter.com/oauth/authorize'
