@@ -1,16 +1,15 @@
 # -.- coding: utf-8 -.-
 
 from argparse import ArgumentParser
-from aspsms import send_aspsms
-from twitter import send_tweet
-from mail import send_mail
 try:
     from util import logger, sample_settings
 except ImportError:
     from .util import logger, sample_settings
 
-
 def mail(params):
+
+    from mail import send_mail
+
     logger.info('cli sends mail')
     response = send_mail(params.to, params.message, subject=params.subject, subjecttag=params.subjecttag, subjectdate=params.subjectd, cc=params.cc, bcc=params.bcc, files=params.files, sender=params.sender, footer=params.footer)
     if response == True:
@@ -19,6 +18,9 @@ def mail(params):
         parser.exit(status=-1, message='fail: %s\n' %(response))
 
 def aspsms(params):
+
+    from aspsms import send_aspsms
+
     logger.info('cli sends aspsms')
     response = send_aspsms(params.to, params.message, originator=params.origin, flashing=params.flashing, maxchars=params.maxchars)
     if response == True:
@@ -30,6 +32,9 @@ def gsmsms(params):
     pass
 
 def twitter(params):
+
+    from twitter import send_tweet
+
     logger.info('cli sends tweet')
     response = send_tweet(params.message, mention=params.mention)
     if response == True:

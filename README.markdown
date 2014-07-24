@@ -14,7 +14,10 @@ to build yourself a configuration change the sample values in `util.py` and exec
 
 you should have a __config.json__ afterwards.
 
-twitter: get an api key and run `python3 twitter.py` to generate oauth credentials.
+twitter: 
+generate an api key on [dev.twitter.com](https://dev.twitter.com "twitter dev") or ask me for mine.
+
+enter the keys in `util.py` then run `python3 twitter.py` to generate oauth credentials.
 
 ## cli
 
@@ -41,7 +44,7 @@ Simple aspsms example:
 
 Simple twitter example:
 
-    python3 cli.py twitter 'This is a test message' 
+    python3 cli.py twitter 'This is a test message' --mention user1 user2
 
 ### mail
 

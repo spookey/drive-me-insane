@@ -61,7 +61,7 @@ def make_mime_file(filename):
 def ext_log(command, text, warn=False):
     logresult = command
     line = '%s: status: %d ~ %s' %(text, logresult[0], logresult[-1].decode('UTF-8'))
-    if warn: logger.warn(line)
+    if warn: logger.warning(line)
     else: logger.info(line)
 
 def dialup():
@@ -79,7 +79,7 @@ def dialup():
             tlssession.ehlo()
             return tlssession
         else:
-            logger.warn('plaintext connection')
+            logger.warning('plaintext connection')
             return tlssession
 
     try:
